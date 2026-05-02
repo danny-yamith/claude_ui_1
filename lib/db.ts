@@ -1,6 +1,5 @@
 import path from "path";
-// @ts-expect-error - bun:sqlite is a runtime module, not in npm
-import { Database } from "bun:sqlite";
+import { Database, type SQLQueryBindings } from "bun:sqlite";
 
 const dbPath = process.env.DB_PATH || path.join(process.cwd(), "data", "app.db");
 
@@ -15,17 +14,17 @@ export function getDb(): Database {
   return db;
 }
 
-export async function query<T>(sql: string, params?: unknown[]): Promise<T[]> {
+export async function query<T>(sql: string, params?: SQLQueryBindings[]): Promise<T[]> {
   const stmt = getDb().prepare(sql);
   return stmt.all(...(params || [])) as T[];
 }
 
-export async function get<T>(sql: string, params?: unknown[]): Promise<T | undefined> {
+export async function get<T>(sql: string, params?: SQLQueryBindings[]): Promise<T | undefined> {
   const stmt = getDb().prepare(sql);
   return stmt.get(...(params || [])) as T | undefined;
 }
 
-export async function run(sql: string, params?: unknown[]): Promise<{ changes: number }> {
+export async function run(sql: string, params?: SQLQueryBindings[]): Promise<{ changes: number }> {
   const stmt = getDb().prepare(sql);
   const result = stmt.run(...(params || []));
   return { changes: result.changes };

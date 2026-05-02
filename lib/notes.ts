@@ -1,4 +1,5 @@
 import { query, get, run } from "./db";
+import type { SQLQueryBindings } from "bun:sqlite";
 import { nanoid } from "nanoid";
 
 export type Note = {
@@ -61,7 +62,7 @@ export async function updateNote(
   if (!existing) return null;
 
   const updates: string[] = [];
-  const values: unknown[] = [];
+  const values: SQLQueryBindings[] = [];
 
   if (data.title !== undefined) {
     updates.push("title = ?");

@@ -1,7 +1,5 @@
 import { betterAuth } from "better-auth";
-import { getDb, initDb } from "./db";
-
-await initDb();
+import { getDb } from "./db";
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET || "change-me-in-production",

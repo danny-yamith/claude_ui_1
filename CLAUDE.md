@@ -4,6 +4,8 @@ we're building the app described in  @public/SPEC.md . Read that file for genera
 
 Keep ypu replies extremly concise and focus on conveying the key information. No unnecesary fluff, no long code snippets.
 
+whwnever working with any third-party library or something similar , you MUST look up the official documentation to ensure that you're working up-to-date information. 
+Use the DocExplorer subagent for efficvent documentation lookup. 
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 

@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "@/lib/auth-client";
+import Header from "@/components/Header";
+import { signOut } from "@/lib/auth-client";
 
 interface Note {
   id: string;
@@ -16,17 +19,22 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
+    if (!session) {
+      router.push("/authenticate?mode=login");
+      return;
+    }
     fetchNotes();
-  }, []);
+  }, [session, router]);
 
   async function fetchNotes() {
     try {
       const res = await fetch("/api/notes");
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("/login");
+          router.push("/authenticate?mode=login");
           return;
         }
         throw new Error("Failed to fetch notes");
@@ -55,29 +63,34 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleLogout() {
+    await signOut();
+    router.push("/");
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-slate-900">Notes</h1>
+      <Header />
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex gap-4">
-            <button
-              onClick={createNote}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            <Link
+              href="/notes/new"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
               + New Note
-            </button>
-            <Link
-              href="/logout"
-              className="px-4 py-2 text-slate-600 hover:text-slate-900"
-            >
-              Logout
             </Link>
           </div>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            Logout
+          </button>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded text-red-700">
             {error}

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import NoteEditor from "@/components/NoteEditor";
+import { useSession } from "@/lib/auth-client";
+import Header from "@/components/Header";
 
 interface Note {
   id: string;
@@ -19,6 +21,7 @@ export default function NoteEditorPage() {
   const params = useParams();
   const router = useRouter();
   const noteId = params.id as string;
+  const { data: session } = useSession();
 
   const [note, setNote] = useState<Note | null>(null);
   const [title, setTitle] = useState("");
@@ -29,15 +32,19 @@ export default function NoteEditorPage() {
   const [publicUrl, setPublicUrl] = useState("");
 
   useEffect(() => {
+    if (!session) {
+      router.push("/authenticate?mode=login");
+      return;
+    }
     fetchNote();
-  }, [noteId]);
+  }, [noteId, session, router]);
 
   async function fetchNote() {
     try {
       const res = await fetch(`/api/notes/${noteId}`);
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("/login");
+          router.push("/authenticate?mode=login");
           return;
         }
         router.push("/dashboard");
@@ -122,23 +129,24 @@ export default function NoteEditorPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200">
+      <Header />
+      <div className="bg-white border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center mb-4">
-            <Link href="/dashboard" className="text-blue-600 hover:underline">
-              ← Back
+            <Link href="/dashboard" className="text-blue-600 hover:underline font-medium">
+              ← Back to Dashboard
             </Link>
             <div className="flex gap-2">
               <button
                 onClick={saveNote}
                 disabled={saving}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors"
               >
                 {saving ? "Saving..." : "Save"}
               </button>
               <button
                 onClick={deleteNote}
-                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium"
+                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium transition-colors"
               >
                 Delete
               </button>
@@ -152,7 +160,7 @@ export default function NoteEditorPage() {
             placeholder="Untitled note"
           />
         </div>
-      </header>
+      </div>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">

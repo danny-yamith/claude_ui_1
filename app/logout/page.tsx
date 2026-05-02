@@ -2,19 +2,13 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth-client";
 
 export default function LogoutPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function logout() {
-      try {
-        await fetch("/api/auth/sign-out", { method: "POST" });
-      } finally {
-        router.push("/");
-      }
-    }
-    logout();
+    signOut().finally(() => router.push("/"));
   }, [router]);
 
   return (

@@ -8,13 +8,13 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-slate-900">Notes</h1>
           <div className="flex gap-4">
             <Link
-              href="/login"
+              href="/authenticate?mode=login"
               className="px-4 py-2 text-slate-600 hover:text-slate-900 font-medium"
             >
               Sign In
             </Link>
             <Link
-              href="/register"
+              href="/authenticate?mode=register"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
             >
               Sign Up
@@ -32,7 +32,7 @@ export default function Home() {
             Create beautiful notes with rich formatting. Share them publicly with a single click.
           </p>
           <Link
-            href="/register"
+            href="/authenticate?mode=register"
             className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg"
           >
             Get Started
