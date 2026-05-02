@@ -35,18 +35,28 @@ function AuthForm() {
     setError("");
     setLoading(true);
 
-    const { error } =
-      mode === "login"
-        ? await signIn.email({ email, password })
-        : await signUp.email({ name, email, password });
+    try {
+      const { error } =
+        mode === "login"
+          ? await signIn.email({ email, password }, {
+              onSuccess: () => {
+                router.push("/dashboard");
+              }
+            })
+          : await signUp.email({ name, email, password }, {
+              onSuccess: () => {
+                router.push("/dashboard");
+              }
+            });
 
-    if (error) {
-      setError(error.message || (mode === "login" ? "Sign in failed" : "Sign up failed"));
+      if (error) {
+        setError(error.message || (mode === "login" ? "Sign in failed" : "Sign up failed"));
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
       setLoading(false);
-      return;
     }
-
-    router.push("/dashboard");
   }
 
   const isLogin = mode === "login";
